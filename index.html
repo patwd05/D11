@@ -1,0 +1,580 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="initial-scale=1,user-scalable=no,maximum-scale=1,width=device-width">
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <link rel="stylesheet" href="css/leaflet.css">
+        <link rel="stylesheet" href="css/qgis2web.css"><link rel="stylesheet" href="css/fontawesome-all.min.css">
+        <link rel="stylesheet" href="css/filter.css">
+<link rel="stylesheet" href="css/nouislider.min.css">
+        <link rel="stylesheet" href="css/leaflet-control-geocoder.Geocoder.css">
+        <style>
+        html, body, #map {
+            width: 100%;
+            height: 100%;
+            padding: 0;
+            margin: 0;
+        }
+        </style>
+        <title></title>
+    </head>
+    <body>
+        <div id="map">
+        </div>
+        <script src="js/qgis2web_expressions.js"></script>
+        <script src="js/leaflet.js"></script>
+        <script src="js/leaflet.rotatedMarker.js"></script>
+        <script src="js/leaflet.pattern.js"></script>
+        <script src="js/leaflet-hash.js"></script>
+        <script src="js/Autolinker.min.js"></script>
+        <script src="js/rbush.min.js"></script>
+        <script src="js/labelgun.min.js"></script>
+        <script src="js/labels.js"></script>
+        <script src="js/leaflet-control-geocoder.Geocoder.js"></script>
+        <script src="js/tailDT.js"></script>
+<script src="js/nouislider.min.js"></script>
+<script src="js/wNumb.js"></script>
+        <script src="data/HSBoundaries_2.js"></script>
+        <script src="data/Schools_3.js"></script>
+        <script>
+        var highlightLayer;
+        function highlightFeature(e) {
+            highlightLayer = e.target;
+            highlightLayer.openPopup();
+        }
+        var map = L.map('map', {
+            zoomControl:true, maxZoom:28, minZoom:1
+        }).fitBounds([[38.80532884845754,-104.91136185670939],[38.95075590403375,-104.68119542252205]]);
+        var hash = new L.Hash(map);
+        map.attributionControl.setPrefix('<a href="https://github.com/tomchadwin/qgis2web" target="_blank">qgis2web</a> &middot; <a href="https://leafletjs.com" title="A JS library for interactive maps">Leaflet</a> &middot; <a href="https://qgis.org">QGIS</a>');
+        var autolinker = new Autolinker({truncate: {length: 30, location: 'smart'}});
+        var bounds_group = new L.featureGroup([]);
+        function setBounds() {
+        }
+        map.createPane('pane_MapboxSatellite_0');
+        map.getPane('pane_MapboxSatellite_0').style.zIndex = 400;
+        var layer_MapboxSatellite_0 = L.tileLayer('https://api.mapbox.com/v4/mapbox.satellite/{z}/{x}/{y}.webp?sku=101S0AiAdllT3&access_token=pk.eyJ1Ijoiam9uY2hlbWxhIiwiYSI6IjdXUzRocmsifQ.acEmRifqE4Bh2Xz-IY_4Bw', {
+            pane: 'pane_MapboxSatellite_0',
+            opacity: 1.0,
+            attribution: '<a href="https://www.maxar.com/">Maxar</a>',
+            minZoom: 1,
+            maxZoom: 28,
+            minNativeZoom: 0,
+            maxNativeZoom: 20
+        });
+        layer_MapboxSatellite_0;
+        map.addLayer(layer_MapboxSatellite_0);
+        map.createPane('pane_Basemap_1');
+        map.getPane('pane_Basemap_1').style.zIndex = 401;
+        var layer_Basemap_1 = L.tileLayer('https://a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}@2x.png', {
+            pane: 'pane_Basemap_1',
+            opacity: 1.0,
+            attribution: '<a href="https://cartodb.com/basemaps/">Map tiles by CartoDB, under CC BY 3.0. Data by OpenStreetMap, under ODbL.</a>',
+            minZoom: 1,
+            maxZoom: 28,
+            minNativeZoom: 0,
+            maxNativeZoom: 20
+        });
+        layer_Basemap_1;
+        map.addLayer(layer_Basemap_1);
+        function pop_HSBoundaries_2(feature, layer) {
+            layer.on({
+                mouseout: function(e) {
+                    if (typeof layer.closePopup == 'function') {
+                        layer.closePopup();
+                    } else {
+                        layer.eachLayer(function(feature){
+                            feature.closePopup()
+                        });
+                    }
+                },
+                mouseover: highlightFeature,
+            });
+            var popupContent = '<table>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['OBJECTID'] !== null ? autolinker.link(feature.properties['OBJECTID'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['ID'] !== null ? autolinker.link(feature.properties['ID'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Descr'] !== null ? autolinker.link(feature.properties['Descr'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Shape_Leng'] !== null ? autolinker.link(feature.properties['Shape_Leng'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Shape_Area'] !== null ? autolinker.link(feature.properties['Shape_Area'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+        }
+
+        function style_HSBoundaries_2_0() {
+            return {
+                pane: 'pane_HSBoundaries_2',
+                opacity: 1,
+                color: 'rgba(228,130,26,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 1.0,
+                fillOpacity: 0,
+                interactive: true,
+            }
+        }
+        map.createPane('pane_HSBoundaries_2');
+        map.getPane('pane_HSBoundaries_2').style.zIndex = 402;
+        map.getPane('pane_HSBoundaries_2').style['mix-blend-mode'] = 'normal';
+        var layer_HSBoundaries_2 = new L.geoJson(json_HSBoundaries_2, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_HSBoundaries_2',
+            layerName: 'layer_HSBoundaries_2',
+            pane: 'pane_HSBoundaries_2',
+            onEachFeature: pop_HSBoundaries_2,
+            style: style_HSBoundaries_2_0,
+        });
+        bounds_group.addLayer(layer_HSBoundaries_2);
+        map.addLayer(layer_HSBoundaries_2);
+        function pop_Schools_3(feature, layer) {
+            layer.on({
+                mouseout: function(e) {
+                    if (typeof layer.closePopup == 'function') {
+                        layer.closePopup();
+                    } else {
+                        layer.eachLayer(function(feature){
+                            feature.closePopup()
+                        });
+                    }
+                },
+                mouseover: highlightFeature,
+            });
+            var popupContent = '<table>\
+                    <tr>\
+                        <td colspan="2"><strong>School Name</strong><br />' + (feature.properties['CSSD_Schoo'] !== null ? autolinker.link(feature.properties['CSSD_Schoo'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Program Type</th>\
+                        <td>' + (feature.properties['230620_C_5'] !== null ? autolinker.link(feature.properties['230620_C_5'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">EA</th>\
+                        <td>' + (feature.properties['__Weighted overall EA Score'] !== null ? autolinker.link(feature.properties['__Weighted overall EA Score'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Util %</th>\
+                        <td>' + (feature.properties['__Utilization%'] !== null ? autolinker.link(feature.properties['__Utilization%'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">CPTED</th>\
+                        <td>' + (feature.properties['__CPTED%'] !== null ? autolinker.link(feature.properties['__CPTED%'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">SPF</th>\
+                        <td>' + (feature.properties['__SPF'] !== null ? autolinker.link(feature.properties['__SPF'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">FCI</th>\
+                        <td>' + (feature.properties['__FCI'] !== null ? autolinker.link(feature.properties['__FCI'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Free/Reduced</th>\
+                        <td>' + (feature.properties['__Free and reduced'] !== null ? autolinker.link(feature.properties['__Free and reduced'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+        }
+
+        function style_Schools_3_0(feature) {
+            switch(String(feature.properties['230620_C_5'])) {
+                case 'Elementary':
+                    return {
+                pane: 'pane_Schools_3',
+                radius: 8.0,
+                opacity: 1,
+                color: 'rgba(255,255,255,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 2.0,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(71,215,172,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'High':
+                    return {
+                pane: 'pane_Schools_3',
+                radius: 8.0,
+                opacity: 1,
+                color: 'rgba(255,255,255,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 2.0,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(85,51,222,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'Middle':
+                    return {
+                pane: 'pane_Schools_3',
+                radius: 8.0,
+                opacity: 1,
+                color: 'rgba(255,255,255,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 2.0,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(197,221,89,1.0)',
+                interactive: true,
+            }
+                    break;
+            }
+        }
+        map.createPane('pane_Schools_3');
+        map.getPane('pane_Schools_3').style.zIndex = 403;
+        map.getPane('pane_Schools_3').style['mix-blend-mode'] = 'normal';
+        var layer_Schools_3 = new L.geoJson(json_Schools_3, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_Schools_3',
+            layerName: 'layer_Schools_3',
+            pane: 'pane_Schools_3',
+            onEachFeature: pop_Schools_3,
+            pointToLayer: function (feature, latlng) {
+                var context = {
+                    feature: feature,
+                    variables: {}
+                };
+                return L.circleMarker(latlng, style_Schools_3_0(feature));
+            },
+        });
+        bounds_group.addLayer(layer_Schools_3);
+        map.addLayer(layer_Schools_3);
+        var osmGeocoder = new L.Control.Geocoder({
+            collapsed: true,
+            position: 'topleft',
+            text: 'Search',
+            title: 'Testing'
+        }).addTo(map);
+        document.getElementsByClassName('leaflet-control-geocoder-icon')[0]
+        .className += ' fa fa-search';
+        document.getElementsByClassName('leaflet-control-geocoder-icon')[0]
+        .title += 'Search for a place';
+        var baseMaps = {};
+        L.control.layers(baseMaps,{'Schools<br /><table><tr><td style="text-align: center;"><img src="legend/Schools_3_Elementary0.png" /></td><td>Elementary</td></tr><tr><td style="text-align: center;"><img src="legend/Schools_3_High1.png" /></td><td>High</td></tr><tr><td style="text-align: center;"><img src="legend/Schools_3_Middle2.png" /></td><td>Middle</td></tr></table>': layer_Schools_3,'<img src="legend/HSBoundaries_2.png" /> HS Boundaries': layer_HSBoundaries_2,"Base map": layer_Basemap_1,"Mapbox Satellite": layer_MapboxSatellite_0,}).addTo(map);
+        setBounds();
+        var mapDiv = document.getElementById('map');
+        var row = document.createElement('div');
+        row.className="row";
+        row.id="all";
+        row.style.height = "100%";
+        var col1 = document.createElement('div');
+        col1.className="col9";
+        col1.id = "mapWindow";
+        col1.style.height = "99%";
+        col1.style.width = "80%";
+        col1.style.display = "inline-block";
+        var col2 = document.createElement('div');
+        col2.className="col3";
+        col2.id = "menu";
+        col2.style.display = "inline-block";
+        mapDiv.parentNode.insertBefore(row, mapDiv);
+        document.getElementById("all").appendChild(col1);
+        document.getElementById("all").appendChild(col2);
+        col1.appendChild(mapDiv)
+        var Filters = {"__Weighted overall EA Score": "real","__FCI": "real","__Utilization%": "real","__SPF": "real","__Free and reduced": "real","__CPTED%": "real"};
+        function filterFunc() {
+          map.eachLayer(function(lyr){
+          if ("options" in lyr && "dataVar" in lyr["options"]){
+            features = this[lyr["options"]["dataVar"]].features.slice(0);
+            try{
+              for (key in Filters){
+                keyS = key.replace(/[^a-zA-Z0-9_]/g, "")
+                if (Filters[key] == "str" || Filters[key] == "bool"){
+                  var selection = [];
+                  var options = document.getElementById("sel_" + keyS).options
+                  for (var i=0; i < options.length; i++) {
+                    if (options[i].selected) selection.push(options[i].value);
+                  }
+                    try{
+                      if (key in features[0].properties){
+                        for (i = features.length - 1;
+                          i >= 0; --i){
+                          if (selection.indexOf(
+                          features[i].properties[key])<0
+                          && selection.length>0) {
+                          features.splice(i,1);
+                          }
+                        }
+                      }
+                    } catch(err){
+                  }
+                }
+                if (Filters[key] == "int"){
+                  sliderVals =  document.getElementById(
+                    "div_" + keyS).noUiSlider.get();
+                  try{
+                    if (key in features[0].properties){
+                    for (i = features.length - 1; i >= 0; --i){
+                      if (parseInt(features[i].properties[key])
+                          < sliderVals[0]
+                          || parseInt(features[i].properties[key])
+                          > sliderVals[1]){
+                            features.splice(i,1);
+                          }
+                        }
+                      }
+                    } catch(err){
+                    }
+                  }
+                if (Filters[key] == "real"){
+                  sliderVals =  document.getElementById(
+                    "div_" + keyS).noUiSlider.get();
+                  try{
+                    if (key in features[0].properties){
+                    for (i = features.length - 1; i >= 0; --i){
+                      if (features[i].properties[key]
+                          < sliderVals[0]
+                          || features[i].properties[key]
+                          > sliderVals[1]){
+                            features.splice(i,1);
+                          }
+                        }
+                      }
+                    } catch(err){
+                    }
+                  }
+                if (Filters[key] == "date"
+                  || Filters[key] == "datetime"
+                  || Filters[key] == "time"){
+                  try{
+                    if (key in features[0].properties){
+                      HTMLkey = key.replace(/[&\/\\#,+()$~%.'":*?<>{} ]/g, '');
+                      startdate = document.getElementById("dat_" +
+                        HTMLkey + "_date1").value.replace(" ", "T");
+                      enddate = document.getElementById("dat_" +
+                        HTMLkey + "_date2").value.replace(" ", "T");
+                      for (i = features.length - 1; i >= 0; --i){
+                        if (features[i].properties[key] < startdate
+                          || features[i].properties[key] > enddate){
+                          features.splice(i,1);
+                        }
+                      }
+                    }
+                  } catch(err){
+                  }
+                }
+              }
+            } catch(err){
+            }
+          this[lyr["options"]["layerName"]].clearLayers();
+          this[lyr["options"]["layerName"]].addData(features);
+          }
+          })
+        }
+            document.getElementById("menu").appendChild(
+                document.createElement("div"));
+            var div___WeightedoverallEAScore = document.createElement("div");
+            div___WeightedoverallEAScore.id = "div___WeightedoverallEAScore";
+            div___WeightedoverallEAScore.className = "slider";
+            document.getElementById("menu").appendChild(div___WeightedoverallEAScore);
+            var lab___WeightedoverallEAScore = document.createElement('div');
+            lab___WeightedoverallEAScore.innerHTML  = '__Weighted overall EA Score: <span id="val___WeightedoverallEAScore"></span>';
+            lab___WeightedoverallEAScore.className = 'filterlabel';
+            document.getElementById("menu").appendChild(lab___WeightedoverallEAScore);
+            var reset___WeightedoverallEAScore = document.createElement('div');
+            reset___WeightedoverallEAScore.innerHTML = 'clear filter';
+            reset___WeightedoverallEAScore.className = 'filterlabel';
+            lab___WeightedoverallEAScore.className = 'filterlabel';
+            reset___WeightedoverallEAScore.onclick = function() {
+                sel___WeightedoverallEAScore.noUiSlider.reset();
+            };
+            document.getElementById("menu").appendChild(reset___WeightedoverallEAScore);
+            var sel___WeightedoverallEAScore = document.getElementById('div___WeightedoverallEAScore');
+            noUiSlider.create(sel___WeightedoverallEAScore, {
+                connect: true,
+                start: [0.3, 0.72],
+                range: {
+                min: 0.3,
+                max: 0.72
+                }
+            });
+            sel___WeightedoverallEAScore.noUiSlider.on('update', function (values) {
+            val___WeightedoverallEAScore = document.getElementById('val___WeightedoverallEAScore');
+            val___WeightedoverallEAScore.innerHTML = values.join(' - ');
+                filterFunc()
+            });
+            document.getElementById("menu").appendChild(
+                document.createElement("div"));
+            var div___FCI = document.createElement("div");
+            div___FCI.id = "div___FCI";
+            div___FCI.className = "slider";
+            document.getElementById("menu").appendChild(div___FCI);
+            var lab___FCI = document.createElement('div');
+            lab___FCI.innerHTML  = '__FCI: <span id="val___FCI"></span>';
+            lab___FCI.className = 'filterlabel';
+            document.getElementById("menu").appendChild(lab___FCI);
+            var reset___FCI = document.createElement('div');
+            reset___FCI.innerHTML = 'clear filter';
+            reset___FCI.className = 'filterlabel';
+            lab___FCI.className = 'filterlabel';
+            reset___FCI.onclick = function() {
+                sel___FCI.noUiSlider.reset();
+            };
+            document.getElementById("menu").appendChild(reset___FCI);
+            var sel___FCI = document.getElementById('div___FCI');
+            noUiSlider.create(sel___FCI, {
+                connect: true,
+                start: [0.0352, 0.8589],
+                range: {
+                min: 0.0352,
+                max: 0.8589
+                }
+            });
+            sel___FCI.noUiSlider.on('update', function (values) {
+            val___FCI = document.getElementById('val___FCI');
+            val___FCI.innerHTML = values.join(' - ');
+                filterFunc()
+            });
+            document.getElementById("menu").appendChild(
+                document.createElement("div"));
+            var div___Utilization = document.createElement("div");
+            div___Utilization.id = "div___Utilization";
+            div___Utilization.className = "slider";
+            document.getElementById("menu").appendChild(div___Utilization);
+            var lab___Utilization = document.createElement('div');
+            lab___Utilization.innerHTML  = '__Utilization%: <span id="val___Utilization"></span>';
+            lab___Utilization.className = 'filterlabel';
+            document.getElementById("menu").appendChild(lab___Utilization);
+            var reset___Utilization = document.createElement('div');
+            reset___Utilization.innerHTML = 'clear filter';
+            reset___Utilization.className = 'filterlabel';
+            lab___Utilization.className = 'filterlabel';
+            reset___Utilization.onclick = function() {
+                sel___Utilization.noUiSlider.reset();
+            };
+            document.getElementById("menu").appendChild(reset___Utilization);
+            var sel___Utilization = document.getElementById('div___Utilization');
+            noUiSlider.create(sel___Utilization, {
+                connect: true,
+                start: [0, 0.8819],
+                range: {
+                min: 0,
+                max: 0.8819
+                }
+            });
+            sel___Utilization.noUiSlider.on('update', function (values) {
+            val___Utilization = document.getElementById('val___Utilization');
+            val___Utilization.innerHTML = values.join(' - ');
+                filterFunc()
+            });
+            document.getElementById("menu").appendChild(
+                document.createElement("div"));
+            var div___SPF = document.createElement("div");
+            div___SPF.id = "div___SPF";
+            div___SPF.className = "slider";
+            document.getElementById("menu").appendChild(div___SPF);
+            var lab___SPF = document.createElement('div');
+            lab___SPF.innerHTML  = '__SPF: <span id="val___SPF"></span>';
+            lab___SPF.className = 'filterlabel';
+            document.getElementById("menu").appendChild(lab___SPF);
+            var reset___SPF = document.createElement('div');
+            reset___SPF.innerHTML = 'clear filter';
+            reset___SPF.className = 'filterlabel';
+            lab___SPF.className = 'filterlabel';
+            reset___SPF.onclick = function() {
+                sel___SPF.noUiSlider.reset();
+            };
+            document.getElementById("menu").appendChild(reset___SPF);
+            var sel___SPF = document.getElementById('div___SPF');
+            noUiSlider.create(sel___SPF, {
+                connect: true,
+                start: [32.5, 82.3],
+                range: {
+                min: 32.5,
+                max: 82.3
+                }
+            });
+            sel___SPF.noUiSlider.on('update', function (values) {
+            val___SPF = document.getElementById('val___SPF');
+            val___SPF.innerHTML = values.join(' - ');
+                filterFunc()
+            });
+            document.getElementById("menu").appendChild(
+                document.createElement("div"));
+            var div___Freeandreduced = document.createElement("div");
+            div___Freeandreduced.id = "div___Freeandreduced";
+            div___Freeandreduced.className = "slider";
+            document.getElementById("menu").appendChild(div___Freeandreduced);
+            var lab___Freeandreduced = document.createElement('div');
+            lab___Freeandreduced.innerHTML  = '__Free and reduced: <span id="val___Freeandreduced"></span>';
+            lab___Freeandreduced.className = 'filterlabel';
+            document.getElementById("menu").appendChild(lab___Freeandreduced);
+            var reset___Freeandreduced = document.createElement('div');
+            reset___Freeandreduced.innerHTML = 'clear filter';
+            reset___Freeandreduced.className = 'filterlabel';
+            lab___Freeandreduced.className = 'filterlabel';
+            reset___Freeandreduced.onclick = function() {
+                sel___Freeandreduced.noUiSlider.reset();
+            };
+            document.getElementById("menu").appendChild(reset___Freeandreduced);
+            var sel___Freeandreduced = document.getElementById('div___Freeandreduced');
+            noUiSlider.create(sel___Freeandreduced, {
+                connect: true,
+                start: [0.21, 0.88],
+                range: {
+                min: 0.21,
+                max: 0.88
+                }
+            });
+            sel___Freeandreduced.noUiSlider.on('update', function (values) {
+            val___Freeandreduced = document.getElementById('val___Freeandreduced');
+            val___Freeandreduced.innerHTML = values.join(' - ');
+                filterFunc()
+            });
+            document.getElementById("menu").appendChild(
+                document.createElement("div"));
+            var div___CPTED = document.createElement("div");
+            div___CPTED.id = "div___CPTED";
+            div___CPTED.className = "slider";
+            document.getElementById("menu").appendChild(div___CPTED);
+            var lab___CPTED = document.createElement('div');
+            lab___CPTED.innerHTML  = '__CPTED%: <span id="val___CPTED"></span>';
+            lab___CPTED.className = 'filterlabel';
+            document.getElementById("menu").appendChild(lab___CPTED);
+            var reset___CPTED = document.createElement('div');
+            reset___CPTED.innerHTML = 'clear filter';
+            reset___CPTED.className = 'filterlabel';
+            lab___CPTED.className = 'filterlabel';
+            reset___CPTED.onclick = function() {
+                sel___CPTED.noUiSlider.reset();
+            };
+            document.getElementById("menu").appendChild(reset___CPTED);
+            var sel___CPTED = document.getElementById('div___CPTED');
+            noUiSlider.create(sel___CPTED, {
+                connect: true,
+                start: [0.5307, 0.7663],
+                range: {
+                min: 0.5307,
+                max: 0.7663
+                }
+            });
+            sel___CPTED.noUiSlider.on('update', function (values) {
+            val___CPTED = document.getElementById('val___CPTED');
+            val___CPTED.innerHTML = values.join(' - ');
+                filterFunc()
+            });
+        </script>
+    </body>
+</html>
